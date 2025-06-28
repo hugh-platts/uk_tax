@@ -1,415 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>UK Incremental Tax, NIC & Corporation Tax Calculator</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f2f5;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    h1, h2, h3 {
-      text-align: center;
-      color: #005a9c;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    form {
-      background-color: #fff;
-      padding: 20px 25px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: 20px auto;
-    }
-    label, select, input {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 1rem;
-    }
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    .checkbox-group {
-      margin: 12px 0;
-    }
-    .checkbox-group input {
-      margin-right: 8px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #0073e6;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      display: block;
-      margin: 0 auto;
-    }
-    button:hover {
-      background-color: #005bb5;
-    }
-    .result-container {
-      max-width: 800px;
-      margin: 20px auto;
-      background: #fff;
-      padding: 20px 25px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .breakdown p {
-      margin: 6px 0;
-      font-size: 0.95rem;
-    }
-    /* Style for the help tooltip icon */
-    .help-icon {
-      display: inline-block;
-      background: #e0e0e0;
-      color: #555;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      text-align: center;
-      line-height: 16px;
-      font-size: 12px;
-      cursor: default;
-      margin-left: 4px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Tax, NIC & Corporation Tax Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #e2e8f0;
+            color: #475569;
+            border-radius: 50%;
+            width: 1rem;
+            height: 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 0.25rem;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #334155;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            font-weight: normal;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h1>UK Incremental Tax, NIC & Corporation Tax Calculator</h1>
-    
-    <!-- Tax Bands Table (always shown) -->
-    <h2>Tax Bands</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Band</th>
-          <th>Income Range</th>
-          <th>Rate</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Personal Allowance</td>
-          <td>Up to £12,570</td>
-          <td>0%</td>
-        </tr>
-        <tr>
-          <td>Basic Rate</td>
-          <td>£12,571 – £50,270</td>
-          <td>20%</td>
-        </tr>
-        <tr>
-          <td>Higher Rate</td>
-          <td>£50,271 – £125,140</td>
-          <td>40%</td>
-        </tr>
-        <tr>
-          <td>Additional Rate</td>
-          <td>Over £125,140</td>
-          <td>45%</td>
-        </tr>
-      </tbody>
-    </table>
+<body class="text-slate-800 flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-4xl mx-auto space-y-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 text-center">UK Incremental Tax, NIC &amp; Corporation Tax Calculator</h1>
 
-    <!-- NIC Rates in a collapsible section -->
-    <details>
-      <summary style="cursor:pointer; font-size: 1.1rem; color: #005a9c;">Show NIC Rates</summary>
-      <table>
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>£125 to £242</th>
-            <th>£242.01 to £967</th>
-            <th>Over £967</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>A</td><td>0%</td><td>8%</td><td>2%</td></tr>
-          <tr><td>B</td><td>0%</td><td>1.85%</td><td>2%</td></tr>
-          <tr><td>C</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
-          <tr><td>D</td><td>0%</td><td>2%</td><td>2%</td></tr>
-          <tr><td>E</td><td>0%</td><td>1.85%</td><td>2%</td></tr>
-          <tr><td>F</td><td>0%</td><td>8%</td><td>2%</td></tr>
-          <tr><td>H</td><td>0%</td><td>8%</td><td>2%</td></tr>
-          <tr><td>I</td><td>0%</td><td>1.85%</td><td>2%</td></tr>
-          <tr><td>J</td><td>0%</td><td>2%</td><td>2%</td></tr>
-          <tr><td>K</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
-          <tr><td>L</td><td>0%</td><td>2%</td><td>2%</td></tr>
-          <tr><td>M</td><td>0%</td><td>8%</td><td>2%</td></tr>
-          <tr><td>N</td><td>0%</td><td>8%</td><td>2%</td></tr>
-          <tr><td>S</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
-          <tr><td>V</td><td>0%</td><td>8%</td><td>2%</td></tr>
-          <tr><td>Z</td><td>0%</td><td>2%</td><td>2%</td></tr>
-        </tbody>
-      </table>
-    </details>
-    
-    <!-- Salary Input Form -->
-    <form id="tax-form">
-      <label for="salary">Enter Salary (£):</label>
-      <input type="number" id="salary" name="salary" required step="any" placeholder="E.g., 100000">
-  
-      <label for="salaryType">Salary Type:</label>
-      <select id="salaryType">
-        <option value="annual">Annual</option>
-        <option value="monthly">Monthly</option>
-      </select>
-  
-      <div class="checkbox-group">
-        <input type="checkbox" id="nic" name="nic">
-        <label for="nic" style="display:inline;">Include NIC (National Insurance Contributions)</label>
-      </div>
-  
-      <!-- NIC Category Selection -->
-      <div id="nicCategoryContainer" style="display: none;">
-        <label for="nicCategory">Select NIC Category:</label>
-        <select id="nicCategory">
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-          <option value="E">E</option>
-          <option value="F">F</option>
-          <option value="H">H</option>
-          <option value="I">I</option>
-          <option value="J">J</option>
-          <option value="K">K</option>
-          <option value="L">L</option>
-          <option value="M">M</option>
-          <option value="N">N</option>
-          <option value="S">S</option>
-          <option value="V">V</option>
-          <option value="Z">Z</option>
-        </select>
-      </div>
-      
-      <div class="checkbox-group">
-        <input type="checkbox" id="corpTax" name="corpTax">
-        <label for="corpTax" style="display:inline;">Include Corporation Tax</label>
-      </div>
-      
-      <!-- Corporation Tax Rate Selection (shown only if corpTax checkbox is checked) -->
-      <div id="corpTaxRateContainer" style="display: none;">
-        <label for="corpTaxRate">Select Corporation Tax Rate:
-          <span class="help-icon" title="If your company made more than £250,000 in profit this tax year, then you’ll have to pay the full main rate of 25%. But if your business made a profit of less than £50,000, you only have to pay the ‘small profits rate’ which has been held at 19%.">?</span>
-        </label>
-        <select id="corpTaxRate">
-          <option value="0.19">19%</option>
-          <option value="0.25">25%</option>
-        </select>
-      </div>
-  
-      <button type="button" onclick="calculateTax()">Calculate Tax</button>
-    </form>
-    
-    <!-- Result Section -->
-    <div class="result-container" id="result"></div>
-  </div>
+        <!-- Information Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Tax Bands Table -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-xl font-bold text-center mb-4">Income Tax Bands 2024/25 (England/NI)</h2>
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="p-3 text-left font-semibold">Band</th>
+                            <th class="p-3 text-left font-semibold">Income Range</th>
+                            <th class="p-3 text-left font-semibold">Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-3">Personal Allowance</td><td>Up to £12,570</td><td>0%</td></tr>
+                        <tr class="border-b"><td class="p-3">Basic Rate</td><td>£12,571 – £50,270</td><td>20%</td></tr>
+                        <tr class="border-b"><td class="p-3">Higher Rate</td><td>£50,271 – £125,140</td><td>40%</td></tr>
+                        <tr><td class="p-3">Additional Rate</td><td>Over £125,140</td><td>45%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- NIC Rates Table -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                 <h2 class="text-xl font-bold text-center mb-4">Employee NIC Rates 2024/25 (Weekly)</h2>
+                 <table class="w-full text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="p-3 text-left font-semibold">Category</th>
+                            <th class="p-3 text-left font-semibold">£242.01 to £967</th>
+                            <th class="p-3 text-left font-semibold">Over £967</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td>A, F, H, M, N, V</td><td>8%</td><td>2%</td></tr>
+                        <tr class="border-b"><td>B, E, I</td><td>1.85%</td><td>2%</td></tr>
+                        <tr class="border-b"><td>D, J, L, Z</td><td>2%</td><td>2%</td></tr>
+                        <tr><td>C, K, S</td><td>N/A</td><td>N/A</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-  <script>
-    // Show/hide NIC category selector based on NIC checkbox
-    document.getElementById("nic").addEventListener("change", function() {
-      document.getElementById("nicCategoryContainer").style.display = this.checked ? "block" : "none";
-    });
-    
-    // Show/hide Corporation Tax Rate dropdown based on corpTax checkbox
-    document.getElementById("corpTax").addEventListener("change", function() {
-      document.getElementById("corpTaxRateContainer").style.display = this.checked ? "block" : "none";
-    });
+        <!-- Calculator Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="gross-income" class="block text-sm font-medium text-slate-700 mb-1">Gross Income</label>
+                    <div class="flex">
+                        <div class="relative flex-grow">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">£</span>
+                            <input type="number" id="gross-income" value="66588" class="w-full pl-7 pr-4 py-2 border-r-0 border border-slate-300 rounded-l-lg focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 50000">
+                        </div>
+                        <select id="time-period" class="form-select py-2 px-3 border border-slate-300 rounded-r-lg focus:ring-2 focus:ring-indigo-500 bg-slate-50">
+                            <option value="year">Per Year</option>
+                            <option value="month">Per Month</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                     <label class="flex items-center"><input type="checkbox" id="include-nic" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"> <span class="ml-2 text-sm">Include National Insurance</span></label>
+                     <label class="flex items-center"><input type="checkbox" id="include-corp-tax" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"> <span class="ml-2 text-sm">Include Corporation Tax</span></label>
+                </div>
+                <div id="nic-container" class="hidden">
+                    <label for="nic-category" class="block text-sm font-medium text-slate-700 mb-1">NIC Category</label>
+                    <select id="nic-category" class="w-full form-select py-2 px-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option><option value="L">L</option><option value="M">M</option><option value="N">N</option><option value="S">S</option><option value="V">V</option><option value="Z">Z</option>
+                    </select>
+                </div>
+                <div id="corp-tax-container" class="hidden">
+                     <label for="corp-tax-rate" class="flex items-center text-sm font-medium text-slate-700 mb-1">
+                        Corporation Tax Rate
+                        <span class="tooltip">?
+                            <span class="tooltiptext">If profits are under £50k, the rate is 19%. If over £250k, it's 25%. Between these, a marginal relief applies. This calculator uses a flat rate for estimation.</span>
+                        </span>
+                    </label>
+                    <select id="corp-tax-rate" class="w-full form-select py-2 px-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        <option value="0.19">19% (Small Profits Rate)</option>
+                        <option value="0.25">25% (Main Rate)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-    function calculateTax() {
-      // Retrieve input values
-      let salary = parseFloat(document.getElementById("salary").value);
-      const salaryType = document.getElementById("salaryType").value;
-      const includeNIC = document.getElementById("nic").checked;
-      const includeCorpTax = document.getElementById("corpTax").checked;
-      
-      // Convert monthly salary to annual if needed
-      if (salaryType === "monthly") {
-        salary = salary * 12;
-      }
-      
-      // --- Income Tax Calculation ---
-      const personalAllowance = 12570;
-      const basicRateUpper = 50270;
-      const higherRateUpper = 125140;
-  
-      let taxPersonal = 0; // No tax on income below personal allowance
-      let taxedBasic = 0, taxBasic = 0;
-      let taxedHigher = 0, taxHigher = 0;
-      let taxedAdditional = 0, taxAdditional = 0;
-  
-      if (salary > personalAllowance) {
-        // Basic Rate Calculation
-        taxedBasic = Math.min(salary, basicRateUpper) - personalAllowance;
-        taxBasic = taxedBasic * 0.20;
-  
-        // Higher Rate Calculation
-        if (salary > basicRateUpper) {
-          taxedHigher = Math.min(salary, higherRateUpper) - basicRateUpper;
-          taxHigher = taxedHigher * 0.40;
+        <!-- Results Section -->
+        <div id="results-container" class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <!-- Results will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+    // --- DATA (2024/25 England/NI) ---
+    const taxData = {
+        pa: 12570, pa_taper: 100000,
+        bands: [ { end: 37700, rate: 0.20 }, { end: 125140, rate: 0.40 }, { end: Infinity, rate: 0.45 } ],
+        ni_thresholds: { pt: 12570, uel: 50270 },
+        nic_rates: {
+            'A': { main: 0.08, upper: 0.02 }, 'B': { main: 0.0185, upper: 0.02 },
+            'C': { main: 0, upper: 0 }, 'D': { main: 0.02, upper: 0.02 },
+            'E': { main: 0.0185, upper: 0.02 }, 'F': { main: 0.08, upper: 0.02 },
+            'H': { main: 0.08, upper: 0.02 }, 'I': { main: 0.0185, upper: 0.02 },
+            'J': { main: 0.02, upper: 0.02 }, 'K': { main: 0, upper: 0 },
+            'L': { main: 0.02, upper: 0.02 }, 'M': { main: 0.08, upper: 0.02 },
+            'N': { main: 0.08, upper: 0.02 }, 'S': { main: 0, upper: 0 },
+            'V': { main: 0.08, upper: 0.02 }, 'Z': { main: 0.02, upper: 0.02 }
         }
-  
-        // Additional Rate Calculation
-        if (salary > higherRateUpper) {
-          taxedAdditional = salary - higherRateUpper;
-          taxAdditional = taxedAdditional * 0.45;
+    };
+
+    // --- DOM Elements ---
+    const allInputs = document.querySelectorAll('input, select');
+    const nicCheckbox = document.getElementById('include-nic');
+    const corpTaxCheckbox = document.getElementById('include-corp-tax');
+
+    // --- UTILITY FUNCTIONS ---
+    const formatCurrency = (amount) => `£${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    const getAnnualSalary = (income, period) => period === 'year' ? income : income * 12;
+
+    // --- CALCULATION LOGIC ---
+    function calculateIncomeTax(salary) {
+        let personalAllowance = taxData.pa;
+        if (salary > taxData.pa_taper) {
+            personalAllowance = Math.max(0, personalAllowance - (salary - taxData.pa_taper) / 2);
         }
-      }
-      const incomeTax = taxPersonal + taxBasic + taxHigher + taxAdditional;
-  
-      // --- NIC Calculation Based on NIC Category (monthly basis) ---
-      let nicAnnual = 0;
-      if (includeNIC) {
-        const nicCategory = document.getElementById("nicCategory").value;
-        const naCategories = ["C", "K", "S"];
-        let monthlyNIC = 0;
-  
-        const monthlySalary = salary / 12;
-  
-        if (naCategories.includes(nicCategory)) {
-          monthlyNIC = 0;  // Not applicable for this category
-        } else if (monthlySalary > 125) {
-          // Earnings between £125 and £242 are not charged (0%)
-          // Earnings from £242.01 to £967 are charged at the rate per NIC category
-          let bracket2 = 0;
-          if (monthlySalary > 242) {
-            bracket2 = Math.min(monthlySalary, 967) - 242;
-          }
-          let bracket2Rate = 0;
-          switch(nicCategory) {
-            case "A": bracket2Rate = 0.08; break;
-            case "B": bracket2Rate = 0.0185; break;
-            case "D": bracket2Rate = 0.02; break;
-            case "E": bracket2Rate = 0.0185; break;
-            case "F": bracket2Rate = 0.08; break;
-            case "H": bracket2Rate = 0.08; break;
-            case "I": bracket2Rate = 0.0185; break;
-            case "J": bracket2Rate = 0.02; break;
-            case "L": bracket2Rate = 0.02; break;
-            case "M": bracket2Rate = 0.08; break;
-            case "N": bracket2Rate = 0.08; break;
-            case "V": bracket2Rate = 0.08; break;
-            case "Z": bracket2Rate = 0.02; break;
-            default: bracket2Rate = 0; break;
-          }
-          const nicBracket2 = bracket2 * bracket2Rate;
-  
-          // Earnings above £967 per month are charged at 2%
-          let nicBracket3 = 0;
-          if (monthlySalary > 967) {
-            nicBracket3 = (monthlySalary - 967) * 0.02;
-          }
-          monthlyNIC = nicBracket2 + nicBracket3;
+        const taxableIncome = Math.max(0, salary - personalAllowance);
+        if (taxableIncome === 0) return { total: 0, breakdown: [{band: `Up to ${formatCurrency(personalAllowance)}`, rate: '0%', tax: 0}] };
+        
+        let tax = 0;
+        let remainingIncome = taxableIncome;
+        const breakdown = [];
+
+        // Basic Rate
+        const basicBandAmount = Math.min(remainingIncome, taxData.bands[0].end);
+        if (basicBandAmount > 0) {
+            const bandTax = basicBandAmount * taxData.bands[0].rate;
+            tax += bandTax;
+            remainingIncome -= basicBandAmount;
+            breakdown.push({band: formatCurrency(basicBandAmount), rate: `${taxData.bands[0].rate * 100}%`, tax: bandTax});
         }
-        nicAnnual = monthlyNIC * 12;
-      }
-  
-      // --- Corporation Tax Calculation ---
-      let corpTax = 0;
-      if (includeCorpTax) {
-        // Get the selected corporation tax rate
-        const corpTaxRate = parseFloat(document.getElementById("corpTaxRate").value);
-        corpTax = salary * corpTaxRate;
-      }
-  
-      // Total tax now includes Income Tax, NIC, and Corporation Tax
-      const totalTax = incomeTax + nicAnnual + corpTax;
-      const takeHome = salary - totalTax;
-      // Effective Rate now includes all applicable tax components
-      const effectiveRate = (salary === 0 ? 0 : ((totalTax / salary) * 100)).toFixed(1);
-  
-      // --- Build the Result HTML ---
-      let resultHTML = `<h2>Tax Calculation Results</h2>`;
-      resultHTML += `<p><strong>Annual Salary:</strong> £${salary.toFixed(2)}</p>`;
-      
-      // Summary Table with Take Home Salary and updated Effective Rate
-      resultHTML += `
-        <table>
-          <thead>
-            <tr style="background-color: #f4f4f4;">
-              <th>Salary</th>
-              <th>Total Tax</th>
-              <th>Effective Rate</th>
-              <th>Take Home</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>£${salary.toFixed(2)}</td>
-              <td>£${totalTax.toFixed(2)}</td>
-              <td>${effectiveRate}%</td>
-              <td>£${takeHome.toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-      `;
-      
-      // Detailed Income Tax Breakdown
-      let breakdownHTML = `<div class="breakdown"><h3>Detailed Income Tax Breakdown:</h3>`;
-      breakdownHTML += `<p>0% on first £${personalAllowance.toLocaleString()} = £${taxPersonal.toFixed(2)}</p>`;
-      if (taxedBasic > 0) {
-        breakdownHTML += `<p>20% on £${taxedBasic.toFixed(2)} = £${taxBasic.toFixed(2)}</p>`;
-      }
-      if (taxedHigher > 0) {
-        breakdownHTML += `<p>40% on £${taxedHigher.toFixed(2)} = £${taxHigher.toFixed(2)}</p>`;
-      }
-      if (taxedAdditional > 0) {
-        breakdownHTML += `<p>45% on £${taxedAdditional.toFixed(2)} = £${taxAdditional.toFixed(2)}</p>`;
-      }
-      breakdownHTML += `</div>`;
-      
-      // NIC Breakdown
-      if (includeNIC) {
-        breakdownHTML += `<div class="breakdown"><h3>NIC Calculation (Based on monthly earnings):</h3>`;
-        if (["C", "K", "S"].includes(document.getElementById("nicCategory").value)) {
-          breakdownHTML += `<p>NIC is not applicable for the selected category (${document.getElementById("nicCategory").value}).</p>`;
-        } else {
-          breakdownHTML += `<p>Monthly NIC = £${(nicAnnual / 12).toFixed(2)} (Annual NIC = £${nicAnnual.toFixed(2)})</p>`;
+        // Higher Rate
+        if(remainingIncome > 0){
+            const higherBandAmount = Math.min(remainingIncome, taxData.bands[1].end - taxData.bands[0].end);
+            const bandTax = higherBandAmount * taxData.bands[1].rate;
+            tax += bandTax;
+            remainingIncome -= higherBandAmount;
+            breakdown.push({band: formatCurrency(higherBandAmount), rate: `${taxData.bands[1].rate * 100}%`, tax: bandTax});
         }
-        breakdownHTML += `</div>`;
-      }
-      
-      // Corporation Tax Breakdown
-      if (includeCorpTax) {
-        breakdownHTML += `<div class="breakdown"><h3>Corporation Tax Calculation:</h3>`;
-        breakdownHTML += `<p>Corporation Tax (${(document.getElementById("corpTaxRate").value * 100).toFixed(0)}%) = £${corpTax.toFixed(2)}</p>`;
-        breakdownHTML += `</div>`;
-      }
-      
-      resultHTML += breakdownHTML;
-  
-      document.getElementById("result").innerHTML = resultHTML;
+        // Additional Rate
+        if(remainingIncome > 0){
+            const bandTax = remainingIncome * taxData.bands[2].rate;
+            tax += bandTax;
+            breakdown.push({band: formatCurrency(remainingIncome), rate: `${taxData.bands[2].rate * 100}%`, tax: bandTax});
+        }
+        
+        return { total: tax, breakdown };
     }
-  </script>
+
+    function calculateNIC(salary, category) {
+        const rates = taxData.nic_rates[category];
+        if (!rates || rates.main === 0) return 0;
+
+        const monthlySalary = salary / 12;
+        const monthlyPT = taxData.ni_thresholds.pt / 12;
+        const monthlyUEL = taxData.ni_thresholds.uel / 12;
+        let monthlyNic = 0;
+
+        if (monthlySalary > monthlyUEL) {
+            monthlyNic += (monthlySalary - monthlyUEL) * rates.upper;
+            monthlyNic += (monthlyUEL - monthlyPT) * rates.main;
+        } else if (monthlySalary > monthlyPT) {
+            monthlyNic += (monthlySalary - monthlyPT) * rates.main;
+        }
+        return monthlyNic * 12;
+    }
+    
+    // --- MAIN FUNCTION & UI UPDATE ---
+    function performCalculations() {
+        // 1. Get inputs
+        const income = parseFloat(document.getElementById('gross-income').value) || 0;
+        const period = document.getElementById('time-period').value;
+        const annualSalary = getAnnualSalary(income, period);
+
+        // 2. Perform calculations
+        const { total: incomeTax, breakdown: taxBreakdown } = calculateIncomeTax(annualSalary);
+        
+        let nationalInsurance = 0;
+        if (nicCheckbox.checked) {
+            const nicCategory = document.getElementById('nic-category').value;
+            nationalInsurance = calculateNIC(annualSalary, nicCategory);
+        }
+        
+        let corpTax = 0;
+        if (corpTaxCheckbox.checked) {
+            const corpTaxRate = parseFloat(document.getElementById('corp-tax-rate').value);
+            corpTax = annualSalary * corpTaxRate;
+        }
+
+        const totalTax = incomeTax + nationalInsurance + corpTax;
+        const takeHomePay = annualSalary - totalTax;
+        const effectiveRate = annualSalary > 0 ? (totalTax / annualSalary * 100).toFixed(1) : 0;
+        
+        // 3. Update UI
+        let resultHTML = `
+            <h2 class="text-xl font-bold text-center mb-4">Calculation Results</h2>
+            <p class="text-center text-slate-500 mb-6">Based on an annual income of ${formatCurrency(annualSalary)}</p>
+            <table class="w-full text-center mb-8">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="p-3 font-semibold">Total Tax</th>
+                        <th class="p-3 font-semibold">Effective Rate</th>
+                        <th class="p-3 font-semibold">Take Home Pay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="p-3 text-lg font-bold text-red-600">${formatCurrency(totalTax)}</td>
+                        <td class="p-3 text-lg font-bold">${effectiveRate}%</td>
+                        <td class="p-3 text-lg font-bold text-green-600">${formatCurrency(takeHomePay)}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 class="font-semibold text-lg border-b pb-2 mb-3">Breakdown</h3>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-medium mb-2">Income Tax: ${formatCurrency(incomeTax)}</h4>
+                    <div class="text-sm space-y-1 pl-4 border-l-2">
+                        ${taxBreakdown.map(b => `<p>Taxed at ${b.rate} on ${b.band} = <strong>${formatCurrency(b.tax)}</strong></p>`).join('')}
+                    </div>
+                </div>`;
+        
+        if (nicCheckbox.checked) {
+            resultHTML += `<div><h4 class="font-medium">National Insurance: <strong>${formatCurrency(nationalInsurance)}</strong></h4></div>`;
+        }
+        if (corpTaxCheckbox.checked) {
+            const ratePercent = parseFloat(document.getElementById('corp-tax-rate').value) * 100;
+            resultHTML += `<div><h4 class="font-medium">Corporation Tax (${ratePercent}%): <strong>${formatCurrency(corpTax)}</strong></h4></div>`;
+        }
+        
+        resultHTML += '</div>';
+        document.getElementById('results-container').innerHTML = resultHTML;
+    }
+    
+    // --- Event Listeners ---
+    nicCheckbox.addEventListener('change', () => {
+        document.getElementById('nic-container').classList.toggle('hidden', !nicCheckbox.checked);
+        performCalculations();
+    });
+    corpTaxCheckbox.addEventListener('change', () => {
+        document.getElementById('corp-tax-container').classList.toggle('hidden', !corpTaxCheckbox.checked);
+        performCalculations();
+    });
+
+    allInputs.forEach(input => input.addEventListener('change', performCalculations));
+    document.getElementById('gross-income').addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') performCalculations();
+        else performCalculations(); // Recalculate on keyup
+    });
+
+    // --- Initial calculation on load ---
+    window.onload = performCalculations;
+    </script>
 </body>
 </html>
